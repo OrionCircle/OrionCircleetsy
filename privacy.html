@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OrionCircle — Privacy Policy</title>
+<style>
+:root{--bg:#0d1024;--fg:#ece7dc;--dim:#8e93ad;--acc:#c9a24b;--line:#2a3157}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);line-height:1.65;
+ font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+.wrap{max-width:760px;margin:0 auto;padding:56px 24px 96px}
+h1{font-size:34px;margin:0 0 6px;font-weight:600}
+.sub{color:var(--dim);margin:0 0 40px;font-size:15px}
+h2{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--acc);
+ margin:42px 0 10px}
+p,li{font-size:17px}
+a{color:var(--acc)}
+ul{padding-left:22px}
+code{background:#1a2040;padding:1px 6px;border-radius:4px;font-size:15px}
+.foot{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--dim);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Privacy Policy</h1>
+<p class="sub">OrionCircle · last updated 14 July 2026</p>
+
+<p>This policy explains what data the OrionCircle software integration handles when it connects to
+social platforms — including TikTok — to publish the shop's own promotional content. The
+integration is a private, single-operator tool used only with accounts the operator personally owns.
+It has no other users and collects no data from the public.</p>
+
+<h2>What we access, and why</h2>
+<p>When the operator connects a TikTok account, TikTok issues the integration an access token via
+TikTok Login. Using it, the integration accesses only:</p>
+<ul>
+<li><strong>Basic account info</strong> (<code>user.info.basic</code>) — the account's open ID,
+display name and avatar, used only to confirm which account is connected and to label uploads
+correctly.</li>
+<li><strong>Video upload</strong> (<code>video.upload</code>) — permission to send a video file
+into the connected account's own TikTok Drafts/Inbox, where the operator reviews and posts it.</li>
+</ul>
+<p>The integration reads nothing else. It does not access followers, direct messages, analytics,
+or any other user's content.</p>
+
+<h2>What we store</h2>
+<ul>
+<li>The TikTok access and refresh tokens, stored on a private server, readable only by the single
+system account that uses them (file permissions 600), never exposed publicly.</li>
+<li>A short list of which of our own videos have already been uploaded, so the same one is not sent
+twice. This contains no personal data.</li>
+</ul>
+<p>We do <strong>not</strong> store, sell, share, or transfer any TikTok user data to third
+parties. We do not use it for advertising or profiling. There are no other users whose data could
+be involved.</p>
+
+<h2>How content flows</h2>
+<p>TikTok fetches each video by pulling it from a temporary public URL on our media server. That
+URL carries a random unguessable token, serves only that one promotional video, and can be removed
+after use. No personal data is placed there — only the shop's own marketing video.</p>
+
+<h2>Data retention and deletion</h2>
+<p>Tokens are kept only while the account stays connected. The operator can revoke access at any
+time from TikTok's own "Manage app permissions" settings, which immediately invalidates the token.
+On request to the contact below, all stored tokens and upload records are deleted.</p>
+
+<h2>Third parties</h2>
+<p>The shop uses Etsy (sales and delivery), Printify (printing and shipping), and social platforms
+(TikTok, Instagram, Facebook, YouTube) for promotion. Each has its own privacy policy governing
+data the operator provides directly to them. This policy covers only the OrionCircle integration.</p>
+
+<h2>Contact</h2>
+<p>Privacy questions or a deletion request:
+<a href="mailto:HCSynthex@outlook.de">HCSynthex@outlook.de</a>.</p>
+
+<p class="foot">OrionCircle is an independent seller and is not affiliated with, endorsed by, or
+sponsored by TikTok, Etsy, Meta, or any other platform named here.</p>
+</div>
+</body>
+</html>
