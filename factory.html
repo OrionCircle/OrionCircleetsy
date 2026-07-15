@@ -1,0 +1,222 @@
+<!doctype html><meta charset=utf-8><meta name="robots" content="noindex,nofollow"><meta name=viewport content="width=device-width,initial-scale=1">
+<title>ORION FACTORY // Sector Control</title>
+<link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel=stylesheet>
+<style>
+/* ===== COSMIC CONTROL DECK — starship console skin. Neon on near-black, CRT scanlines. ===== */
+:root{--gold:#ffcf6b;--cyan:#63e6ff;--fg:#b7c6e6;--dim:#6b7699;--line:#22305c;
+ --panel:rgba(9,13,28,.72);--good:#5df2a0;--bad:#ff6b7d;--warn:#ffce54}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#04050c}
+body{color:var(--fg);min-height:100vh;position:relative;overflow-x:hidden;
+ font-family:"VT323",ui-monospace,monospace;font-size:20px;line-height:1.35;
+ background:radial-gradient(1100px 700px at 15% -10%,#0f1a3a 0%,transparent 55%),
+ radial-gradient(900px 600px at 100% 0%,#1a1140 0%,transparent 55%),#04050c;
+ text-shadow:0 0 1px rgba(120,160,255,.15)}
+/* the starfield sits behind everything */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none}
+/* CRT scanlines + a faint vignette, over everything but non-interactive */
+body::after{content:"";position:fixed;inset:0;z-index:50;pointer-events:none;
+ background:repeating-linear-gradient(0deg,rgba(0,0,0,.13) 0 1px,transparent 1px 3px);
+ mix-blend-mode:multiply;animation:flick 6s infinite steps(60)}
+@keyframes flick{0%,97%{opacity:.5}98%{opacity:.32}100%{opacity:.5}}
+@media (prefers-reduced-motion:reduce){body::after{animation:none}#stars{display:none}}
+.wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:22px 16px 90px}
+.pixel{font-family:"Press Start 2P",ui-monospace,monospace;text-shadow:0 0 8px currentColor}
+h1{font-family:"Press Start 2P",monospace;font-size:19px;line-height:1.5;color:#fff;
+ letter-spacing:1px;text-shadow:0 0 10px var(--cyan),0 0 22px rgba(99,230,255,.5)}
+h1 .sub{display:block;font-family:"VT323",monospace;font-size:18px;color:var(--dim);
+ margin-top:10px;letter-spacing:0;text-shadow:none}
+h2{font-family:"Press Start 2P",monospace;font-size:11px;letter-spacing:1px;color:var(--gold);
+ text-transform:uppercase;margin:36px 0 14px;display:flex;align-items:center;gap:12px;
+ text-shadow:0 0 8px rgba(255,207,107,.55)}
+h2 .s{font-family:"VT323",monospace;font-size:16px;color:var(--dim);text-transform:none;
+ letter-spacing:0;text-shadow:none}
+h2:after{content:"";flex:1;height:2px;background:linear-gradient(90deg,rgba(255,207,107,.6),transparent)}
+.hud{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:22px}
+.hud div{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:12px 14px;
+ box-shadow:inset 0 0 20px rgba(40,70,140,.15),0 0 12px rgba(30,50,110,.25);position:relative}
+.hud div:before{content:"";position:absolute;top:5px;left:5px;width:6px;height:6px;
+ border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);opacity:.7}
+.hud b{display:block;font-family:"Press Start 2P",monospace;font-size:19px;color:#fff;margin:4px 0;
+ text-shadow:0 0 8px var(--cyan)}
+.hud span{font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--dim)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:15px 17px;
+ margin-bottom:12px;box-shadow:inset 0 0 26px rgba(40,70,140,.12),0 0 14px rgba(20,40,100,.2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+.pill{display:inline-block;font-family:"VT323",monospace;font-size:14px;letter-spacing:1px;
+ text-transform:uppercase;padding:2px 9px;border-radius:3px;vertical-align:middle}
+.ok{background:rgba(20,80,50,.5);color:var(--good);border:1px solid #1c6b42;box-shadow:0 0 8px rgba(93,242,160,.3)}
+.no{background:rgba(80,20,30,.5);color:var(--bad);border:1px solid #7a2530;box-shadow:0 0 8px rgba(255,107,125,.3)}
+.wait{background:rgba(80,66,16,.5);color:var(--warn);border:1px solid #7a6320}
+.dim{background:rgba(30,40,70,.55);color:var(--dim);border:1px solid var(--line)}
+.ag h3{font-family:"Press Start 2P",monospace;font-size:13px;color:#fff;display:flex;
+ align-items:center;gap:9px;text-shadow:0 0 8px rgba(99,230,255,.6)}
+.ag .cls{font-family:"VT323",monospace;font-size:15px;letter-spacing:1px;text-transform:uppercase;
+ color:var(--gold);text-shadow:0 0 6px rgba(255,207,107,.5)}
+.ag p{color:var(--fg);font-size:17px;margin:10px 0 12px;opacity:.85}
+.led{width:9px;height:9px;border-radius:50%;background:var(--good);box-shadow:0 0 8px var(--good);
+ display:inline-block;animation:pulse 2.4s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.bar{height:9px;background:rgba(10,16,34,.9);border:1px solid var(--line);border-radius:2px;
+ overflow:hidden;margin:8px 0;padding:1px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--cyan));
+ box-shadow:0 0 10px rgba(99,230,255,.6);
+ background-size:8px 100%}
+.lvl{font-size:15px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);
+ display:flex;justify-content:space-between}
+button{font-family:"VT323",monospace;font-size:16px;letter-spacing:.5px;background:rgba(18,28,58,.9);
+ color:var(--cyan);border:1px solid #2f4788;border-radius:3px;padding:6px 12px;cursor:pointer;
+ text-transform:uppercase;transition:.12s}
+button:hover{background:rgba(40,60,110,.95);color:#fff;border-color:var(--cyan);
+ box-shadow:0 0 12px rgba(99,230,255,.5)}
+button.go{color:var(--gold);border-color:#7a5c1e}
+button.go:hover{border-color:var(--gold);box-shadow:0 0 12px rgba(255,207,107,.5)}
+button:disabled{opacity:.5;cursor:wait}
+input,select{background:rgba(6,10,22,.95);border:1px solid #2f4788;color:#dbe6ff;border-radius:3px;
+ padding:6px 9px;font-family:"VT323",monospace;font-size:16px;width:100%}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+table{width:100%;border-collapse:collapse;font-size:17px}
+th{text-align:left;font-family:"VT323",monospace;font-size:14px;letter-spacing:1px;text-transform:uppercase;
+ color:var(--gold);padding:0 10px 9px 0}
+td{padding:7px 10px 7px 0;border-top:1px solid rgba(34,48,92,.6)}
+.up{color:var(--good)}.down{color:var(--bad)}
+.q{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid rgba(34,48,92,.6)}
+.q:first-child{border:0}
+.q .n{font-family:"Press Start 2P",monospace;font-size:11px;color:var(--gold);width:26px;flex:none;padding-top:5px}
+.q .t{font-size:19px;color:#eaf1ff}
+.q .w{color:var(--dim);font-size:16px;margin-top:2px}
+.q .p{width:120px;flex:none;text-align:right;font-size:15px;color:var(--fg)}
+code{background:rgba(20,30,60,.9);padding:1px 6px;border-radius:3px;font-size:16px;color:var(--cyan)}
+.warn{border-color:#7a5c1e;box-shadow:inset 0 0 26px rgba(120,90,20,.15),0 0 14px rgba(120,90,20,.2)}
+a{color:var(--cyan)}
+.mut{color:var(--dim);font-size:15px}
+</style>
+<canvas id=stars></canvas>
+<script>
+(function(){
+ var c=document.getElementById('stars'),x=c.getContext('2d'),st=[];
+ function sz(){c.width=innerWidth;c.height=innerHeight;st=[];
+  var n=Math.min(160,(innerWidth*innerHeight)/9000);
+  for(var i=0;i<n;i++)st.push({x:Math.random()*c.width,y:Math.random()*c.height,
+   r:Math.random()*1.4+.2,p:Math.random()*6.28,s:Math.random()*.02+.004});}
+ sz();addEventListener('resize',sz);
+ (function loop(){x.clearRect(0,0,c.width,c.height);
+  for(var i=0;i<st.length;i++){var s=st[i];s.p+=s.s;var a=.35+Math.abs(Math.sin(s.p))*.65;
+   x.globalAlpha=a;x.fillStyle=i%7?'#9fd0ff':'#ffcf6b';
+   x.beginPath();x.arc(s.x,s.y,s.r,0,6.28);x.fill();}
+  requestAnimationFrame(loop);})();
+})();
+</script>
+<div class=wrap>
+<h1>&#9670; ORION FACTORY <span style="color:var(--gold)">// SECTOR CONTROL</span>
+<span class=sub>Every readout is pulled off the deck live. Nothing is remembered — if a light is green, that system is green right now.</span></h1>
+
+<div class=hud>
+ <div><span>Factory level</span><b>6</b><div class="bar"><i style="width:67%"></i></div><span class=mut>1,296 XP</span></div>
+ <div><span>Revenue</span><b class=down>€0</b><span class=mut>0 sales · 0 reviews</span></div>
+ <div><span>Live listings</span><b>59</b><span class=mut>0 held in dock</span></div>
+ <div><span>Posts sent</span><b>16</b><span class=mut>across all channels</span></div>
+ <div><span>Clips ready</span><b>31</b><span class=mut>25 voiced · 6 story</span></div>
+ <div><span>Paper day</span><b>5<span class=mut> / 30</span></b><span class=mut>simulated</span></div>
+</div>
+<h2>Quest log — what actually needs doing</h2><div class=card><div class=q><div class=n>1</div><div style=flex:1>
+        <div class=t>Make the first sale</div><div class=w>59 listings, 0 sales, 0 reviews. Everything else is theory until this happens. It will come from traffic, and the only traffic channel you can run for free today is Pinterest.</div></div>
+        <div class=p>0/1<div class="bar"><i style="width:0%"></i></div></div></div><div class=q><div class=n>2</div><div style=flex:1>
+        <div class=t>Post pins consistently for 3 weeks</div><div class=w>Pinterest is a search engine; pins keep working for months. This is the single highest-leverage manual hour you can spend.</div></div>
+        <div class=p>2/21<div class="bar"><i style="width:9%"></i></div></div></div><div class=q><div class=n>✓</div><div style=flex:1>
+        <div class=t>Sell one website</div><div class=w>A demo site exists. One client at €800–2000 outearns the entire shop to date, and needs no algorithm to cooperate.</div></div>
+        <div class=p>3/1<div class="bar"><i style="width:100%"></i></div></div></div><div class=q><div class=n>4</div><div style=flex:1>
+        <div class=t>Get image-gen credit back</div><div class=w>All three providers are exhausted, so story videos (~$0.22 each) cannot be made. ~$10 at replicate.com unblocks the video queue that feeds YouTube and TikTok.</div></div>
+        <div class=p>0/1<div class="bar"><i style="width:0%"></i></div></div></div><div class=q><div class=n>5</div><div style=flex:1>
+        <div class=t>Reach 30 paper-trading days</div><div class=w>Before day 30 any ranking is noise wearing a crown. Nothing about real money is discussed before then, and even then only under the written conditions.</div></div>
+        <div class=p>5/30<div class="bar"><i style="width:16%"></i></div></div></div><div class=q><div class=n>6</div><div style=flex:1>
+        <div class=t>Products live on Etsy</div><div class=w>Done, and NOT the constraint. Building more product is the comfortable way to avoid the uncomfortable job of getting visitors.</div></div>
+        <div class=p>59/60<div class="bar"><i style="width:98%"></i></div></div></div></div><h2>Income streams</h2><div class=grid><div class="card">
+        <h3 style="font:700 16px ui-sans-serif;color:#fff">🖼 Etsy — print on demand
+        <span class="pill dim">45 live · 0 held</span></h3>
+        <p style="color:#8592ab;font-size:13.5px;margin:8px 0 6px">Posters, tees, mugs. Printify prints and ships; we never touch stock.</p>
+        <p style="color:#c9d2e3;font-size:13px"><b>Built and live. The bottleneck is traffic, not product — listings with no visitors sell nothing, and no amount of new product changes that.</b></p></div><div class="card">
+        <h3 style="font:700 16px ui-sans-serif;color:#fff">⬇ Etsy — digital downloads
+        <span class="pill dim">14 live</span></h3>
+        <p style="color:#8592ab;font-size:13.5px;margin:8px 0 6px">The original 14 listings. Left live, unworked: indexed, zero cost, any sale is pure margin.</p>
+        <p style="color:#c9d2e3;font-size:13px"><b>Deliberately dormant. Not worth new effort while the physical line is unproven.</b></p></div><div class="card warn">
+        <h3 style="font:700 16px ui-sans-serif;color:#fff">🏛 Websites (Vesta)
+        <span class="pill dim">4 built</span></h3>
+        <p style="color:#8592ab;font-size:13.5px;margin:8px 0 6px">Build sites for clients from a brief or a reference. No marketplace fee, no COGS.</p>
+        <p style="color:#c9d2e3;font-size:13px"><b>THE HIGHEST-VALUE STREAM AND THE ONLY ONE WITH NO TRAFFIC PROBLEM. One site sold beats a year of poster margins. It needs one thing the shop doesn&#x27;t: you talking to a business.</b></p></div><div class="card">
+        <h3 style="font:700 16px ui-sans-serif;color:#fff">📡 Audience
+        <span class="pill dim">2 IG · 13 YT</span></h3>
+        <p style="color:#8592ab;font-size:13.5px;margin:8px 0 6px">Instagram, Facebook, YouTube Shorts, TikTok, X. Not income — the input to income.</p>
+        <p style="color:#c9d2e3;font-size:13px"><b>Posting. Zero followers is the honest starting line; Shorts is the only channel that shows a 0-subscriber account to strangers.</b></p></div><div class="card">
+        <h3 style="font:700 16px ui-sans-serif;color:#fff">🎲 Paper trading
+        <span class="pill dim">day 5</span></h3>
+        <p style="color:#8592ab;font-size:13.5px;margin:8px 0 6px">Nova, Kepler, Helios + a $100 10x book. Fake money, real prices.</p>
+        <p style="color:#c9d2e3;font-size:13px"><b>EARNS €0 AND ALWAYS WILL. It is a learning track, not an income stream. Real money stays hard-gated behind 30 paper days and the written conditions.</b></p></div></div><h2>Broadcast <span class=s>— 16 posts sent · every count read from the agent's own log</span></h2><div class=card><table><tr><th>Channel<th>Sent<th>Ready to post<th>Cadence / limit<th>What it's for</tr><tr><td><b style=color:#e6ebf5>▶ YouTube Shorts</b>
+        <td><span class="pill ok">13</span><td class=mut>18<td class=mut>5/day hard cap (1,600 quota units each)
+        <td class=mut>The only channel that shows a 0-subscriber account to strangers.</tr><tr><td><b style=color:#e6ebf5>📸 Instagram + Facebook</b>
+        <td><span class="pill ok">2</span><td class=mut>29<td class=mut>1→4/day, ramped on purpose
+        <td class=mut>Echo posts and cross-posts. Replies drive the only engagement that works.</tr><tr><td><b style=color:#e6ebf5>🎵 TikTok</b>
+        <td><span class="pill ok">1</span><td class=mut>24<td class=mut>drafts — you tap Post in the app
+        <td class=mut>Sandbox until app review. AI-voiced clips: toggle the AI-content label.</tr><tr><td><b style=color:#e6ebf5>✖ X / Twitter</b>
+        <td><span class="pill dim">0</span><td class=mut>0<td class=mut>needs API keys (pay-per-use)
+        <td class=mut>Line in the post, shop in the bio — a link in a post costs 13× and is demoted.</tr><tr><td><b style=color:#e6ebf5>📌 Pinterest</b>
+        <td><span class="pill wait">25 prepared</span><td class=mut>25<td class=mut>no posting API — manual upload
+        <td class=mut>A search engine: pins keep working for months. Highest-intent for printables.</tr></table><p class=mut style=margin-top:10px><b>Content on hand:</b> 25 voiced quote clips + 6 story videos + 25 Pinterest packs — the fuel the channels burn. A channel with 0 ready is a channel that goes quiet.</p></div><h2>Crew stations <span class=s>— fire an agent from its console</span></h2><div class=grid><div class="card ag"><h3><span class=led></span>🛠 Orion
+        <span class=cls>Executor</span></h3>
+        <div class=lvl><span>Lv 6</span><span>Etsy / POD</span></div>
+        <div class="bar"><i style="width:0%"></i></div>
+        <p>Designs the products, builds the print files, creates the listings. Everything in the shop came out of this agent.</p></div><div class="card ag"><h3><span class=led></span>🔭 Vega
+        <span class=cls>Scout</span></h3>
+        <div class=lvl><span>Lv 4</span><span>Etsy / POD</span></div>
+        <div class="bar"><i style="width:75%"></i></div>
+        <p>Researches a niche before we build into it — real demand, honest saturation verdict, and whether the head term is even enterable. Said no to pastel florals; the birth-flower capsule is its idea.</p></div><div class="card ag"><h3><span class=led></span>🎬 Lyra
+        <span class=cls>Artificer</span></h3>
+        <div class=lvl><span>Lv 4</span><span>Traffic</span></div>
+        <div class="bar"><i style="width:21%"></i></div>
+        <p>Makes the marketing: carousels, reels, story videos, Pinterest pins, captions. Never posts — it fills a queue a human uploads from.</p></div><div class="card ag"><h3><span class=led></span>📡 Echo
+        <span class=cls>Herald</span></h3>
+        <div class=lvl><span>Lv 5</span><span>Traffic</span></div>
+        <div class="bar"><i style="width:0%"></i></div>
+        <p>The only agent that actually posts. Instagram, Facebook, YouTube Shorts, TikTok drafts, X. Ramps up slowly on purpose — a new account firing four posts a day reads as a bot and gets throttled.</p></div><div class="card ag"><h3><span class=led></span>🏛 Vesta
+        <span class=cls>Architect</span></h3>
+        <div class=lvl><span>Lv 4</span><span>Websites</span></div>
+        <div class="bar"><i style="width:0%"></i></div>
+        <p>Builds shippable websites from a brief or from a reference site&#x27;s STRUCTURE. This is the second income stream, and unlike the shop it can be sold for four figures a unit with no inventory and no marketplace taking a cut.</p></div><div class="card ag"><h3><span class=led></span>₿ Nova
+        <span class=cls>Speculator</span></h3>
+        <div class=lvl><span>Lv 1</span><span>Paper trading</span></div>
+        <div class="bar"><i style="width:0%"></i></div>
+        <p>Bitcoin, 5x, long or short, hourly trend. PAPER — fake $10k, real prices, no broker, no exchange key, no order endpoint.</p></div><div class="card ag"><h3><span class=led></span>📈 Kepler
+        <span class=cls>Speculator</span></h3>
+        <div class=lvl><span>Lv 1</span><span>Paper trading</span></div>
+        <div class="bar"><i style="width:0%"></i></div>
+        <p>S&amp;P 500, same rule. Its old daily rule backtested WORSE than doing nothing (+11.8% vs the index&#x27;s +35.7%) — that is why the rule changed.</p></div><div class="card ag"><h3><span class=led></span>🜚 Helios
+        <span class=cls>Speculator</span></h3>
+        <div class=lvl><span>Lv 1</span><span>Paper trading</span></div>
+        <div class="bar"><i style="width:0%"></i></div>
+        <p>Gold at 5x. Its headline return is one leveraged trade, not skill.</p></div></div><h2>Paper trading desk <span class=mut style=text-transform:none;letter-spacing:0>— fake money, real prices, earns €0</span></h2><div class=card><table><tr><th>#<th>Agent<th>Market<th>Side<th>Equity<th>P&L<th>Return<th>Max DD<th>Trades</tr><tr><td>1<td><b style=color:#e6ebf5>Helios</b>
+        <td class=mut>Gold<td><span class="pill dim">SHORT</span>
+        <td>$10,272.92<td><b class="up">+272.92</b>
+        <td class="up">+2.73%
+        <td class=mut>10.3%<td class=mut>1</tr><tr><td>2<td><b style=color:#e6ebf5>Kepler</b>
+        <td class=mut>S&amp;P 500<td><span class="pill dim">LONG</span>
+        <td>$9,944.87<td><b class="down">−55.13</b>
+        <td class="down">-0.55%
+        <td class=mut>3.2%<td class=mut>0</tr><tr><td>3<td><b style=color:#e6ebf5>Nova</b>
+        <td class=mut>Bitcoin<td><span class="pill dim">LONG</span>
+        <td>$9,328.67<td><b class="down">−671.33</b>
+        <td class="down">-6.71%
+        <td class=mut>20.6%<td class=mut>1</tr><tr><td>4<td><b style=color:#e6ebf5>Nova·µ</b>
+        <td class=mut>Bitcoin<td><span class="pill dim">SHORT</span>
+        <td>$100.00<td><b class="up">+0.00</b>
+        <td class="up">+0.00%
+        <td class=mut>0.0%<td class=mut>0</tr><tr><td>5<td><b style=color:#e6ebf5>Kepler·µ</b>
+        <td class=mut>S&amp;P 500<td><span class="pill dim">LONG</span>
+        <td>$100.00<td><b class="up">+0.00</b>
+        <td class="up">+0.00%
+        <td class=mut>0.0%<td class=mut>0</tr><tr><td>6<td><b style=color:#e6ebf5>Helios·µ</b>
+        <td class=mut>Gold<td><span class="pill dim">SHORT</span>
+        <td>$100.00<td><b class="up">+0.00</b>
+        <td class="up">+0.00%
+        <td class=mut>0.0%<td class=mut>0</tr></table><p class=mut style=margin-top:10px><b>Verdict:</b> too early — under 30 days this is noise with a rank next to it. At 5x, a lucky week looks exactly like skill and a bad one takes half the account.</p></div><h2>Services</h2><div class=card><table><tr><td><b style=color:#e6ebf5>mission-control-api</b><td class=mut>Task queue + spend caps<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>claude-bridge</b><td class=mut>OpenAI-shaped endpoint onto Claude Code<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>task-dispatcher</b><td class=mut>Fires Orion when work is queued<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>orion-media</b><td class=mut>Public media host :8790 (Meta/TikTok PULL from it)<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>orion-factory</b><td class=mut>This console :8789<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>social-post.timer</b><td class=mut>Instagram + Facebook, ramped<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>social-reply.timer</b><td class=mut>Replies to comments 4x/day<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>social-discover.timer</b><td class=mut>Engagement list 08:00<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>social-trend.timer</b><td class=mut>Trend quote-card post<td><span class="pill no">inactive</span><td><span class="pill wait">disabled</span></tr><tr><td><b style=color:#e6ebf5>youtube-post.timer</b><td class=mut>Shorts 16:00<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>nova-trade.timer</b><td class=mut>Paper crypto, hourly<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>kepler-trade.timer</b><td class=mut>Paper S&amp;P, hourly<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>helios-gold.timer</b><td class=mut>Paper gold 5x, hourly<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>micro-trade.timer</b><td class=mut>The $100 10x book<td><span class="pill no">inactive</span><td><span class="pill wait">disabled</span></tr><tr><td><b style=color:#e6ebf5>overnight-brief.timer</b><td class=mut>Health check + morning brief 06:00<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr><tr><td><b style=color:#e6ebf5>openclaw-gateway</b><td class=mut>Agent runtime (see note — barely used)<td><span class="pill ok">active</span><td><span class="pill ok">boot</span></tr></table></div><h2>Note on OpenClaw</h2><div class="card warn">
+    <p style=color:#c9d2e3>OpenClaw's gateway is running and almost nothing uses it. The dispatcher calls <code>orion-run.py</code> (headless Claude Code) directly, because OpenClaw could not bill to the Max subscription. It is kept alive for the Discord channel and the agent registry, and that is all it is currently earning its RAM for.</p></div><p class=mut style="margin-top:30px">Rendered 2026-07-15 14:18:09 · all paper trading is simulated. Not real money. Not financial advice.</p></div>
